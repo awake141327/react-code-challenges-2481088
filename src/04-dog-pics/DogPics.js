@@ -1,9 +1,22 @@
+import { useState, useEffect } from 'react';
+
 export default function DogPics () {
-  // API: https://dog.ceo/dog-api/
+  const [data, setData] = useState();
+
+  async function getData() {
+    const response = await fetch("https://dog.ceo/api/breeds/image/random");
+    const { message } = await response.json();
+    setData(message);
+  }
+  
+  useEffect(() => {
+    getData();
+  }, [])
+
   return (
     <div className='dog-pics'>
-      <img src='https://images.dog.ceo/breeds/spaniel-cocker/n02102318_4172.jpg' />
-      <button>🐶</button>
+      <img src={data} />
+      <button onClick={getData}>🐶</button>
     </div>
   )
 }
