@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
 const items = [{
   name: 'apple',
@@ -12,7 +12,38 @@ const items = [{
 }]
 
 function ShoppingCart () {
-  const cart = [{ name: 'apple', quantity: 3, price: 0.39 }]
+  // const cart = [{ name: 'apple', quantity: 3, price: 0.39 }]
+  const [cart, setCart] = useState([]);
+
+  function addToCart(item) {
+    const cartCopy = [...cart];
+    const itemInCart = cartCopy.find(i => item.name === i.name); 
+    if (itemInCart) {
+      itemInCart.quantity += 1;
+      setCart(cartCopy);
+    } else {
+      setCart(prev => [...prev, {...item, quantity: 1}]);
+    }
+  }
+
+  function increaseItem(name) {
+    const cartCopy = [...cart];
+    const itemInCart = cartCopy.find(i => name === i.name);
+    itemInCart.quantity += 1;
+    setCart(cartCopy);
+  }
+
+  function decreaseItem(name) {
+    let cartCopy = [...cart];
+    const itemInCart = cartCopy.find(i => name === i.name);
+    if (itemInCart.quantity > 1) { 
+      itemInCart.quantity -= 1;
+    } else {
+      cartCopy = cartCopy.filter(i => i.name !== name);
+    }
+    setCart(cartCopy);
+  }
+
 
   return (
     <div>
@@ -24,7 +55,7 @@ function ShoppingCart () {
             <div key={item.name}>
               <h3>{item.name}</h3>
               <p>${item.price}</p>
-              <button>Add to Cart</button>
+              <button onClick={() => addToCart(item)}>Add to Cart</button>
             </div>)
           )}
         </div>
@@ -34,20 +65,20 @@ function ShoppingCart () {
             <div key={item.name}>
               <h3>{item.name}</h3>
               <p>
-                <button>-</button>
+                <button onClick={() => decreaseItem(item.name)}>-</button>
                 {item.quantity}
-                <button>+</button>
+                <button onClick={() => increaseItem(item.name)}>+</button>
               </p>
-              <p>Subtotal: ${item.quantity * item.price}</p>
+              <p>Subtotal: ${(item.quantity * item.price).toFixed(2)}</p>
             </div>
           ))}
         </div>
       </div>
       <div className='total'>
-        <h2>Total: $0.00</h2>
+        <h2>Total: ${cart.reduce((acc, i) => acc + (i.quantity * i.price), 0).toFixed(2)}</h2>
       </div>
     </div>
   )
 }
 
-export default ShoppingCart
+export default ShoppingCart;
